@@ -53,6 +53,9 @@ namespace LibSampleRate {
         /// <summary>
         /// Gets the number of bytes buffered by the SRC. Buffering may happen since the SRC may read more
         /// data than it outputs during one #Process call.
+        /// 
+        /// This is a calculated estimation that may be off by a few samples due to the way it
+        /// is calculated. See the private #Process method for details.
         /// </summary>
         public int BufferedBytes {
             get { return (int)(bufferedSamples * 4); }
