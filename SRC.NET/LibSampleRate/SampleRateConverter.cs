@@ -20,6 +20,10 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace LibSampleRate {
+
+    /// <summary>
+    /// A sample rate converter backed by libsamplerate.
+    /// </summary>
     public class SampleRateConverter : IDisposable {
 
         private IntPtr srcState = IntPtr.Zero;
@@ -29,6 +33,12 @@ namespace LibSampleRate {
         private double ratio;
         private double bufferedSamples;
 
+        /// <summary>
+        /// Creates a new resampler instance with the supplied converter type (which equals the resampling quality)
+        /// for a supplied number of channels.
+        /// </summary>
+        /// <param name="type">the type of the internal conversion algorithm (quality level)</param>
+        /// <param name="channels">the number of channels that will be provided to the processing method</param>
         public SampleRateConverter(ConverterType type, int channels) {
             srcState = InteropWrapper.src_new(type, channels, out error);
             ThrowExceptionForError(error);
@@ -48,16 +58,28 @@ namespace LibSampleRate {
             get { return (int)(bufferedSamples * 4); }
         }
 
+        /// <summary>
+        /// Resets the resampler, which essentially clears the internal buffer.
+        /// </summary>
         public void Reset() {
             error = InteropWrapper.src_reset(srcState);
             ThrowExceptionForError(error);
             bufferedSamples = 0;
         }
 
+        /// <summary>
+        /// Sets the resampling ratio through an instant change.
+        /// </summary>
+        /// <param name="ratio">the resampling ratio</param>
         public void SetRatio(double ratio) {
             SetRatio(ratio, true);
         }
 
+        /// <summary>
+        /// Sets the resampling ratio. Multiplying the input rate with the ratio factor results in the output rate.
+        /// </summary>
+        /// <param name="ratio">the resampling ratio</param>
+        /// <param name="step">true for an instant change in the ratio, false for a gradual linear change during the next #Process call</param>
         public void SetRatio(double ratio, bool step) {
             if (step) {
                 // force the ratio for the next #Process call instead of linearly interpolating from the previous
@@ -68,10 +90,30 @@ namespace LibSampleRate {
             this.ratio = ratio;
         }
 
+        /// <summary>
+        /// Checks if a given resampling ratio is valid.
+        /// </summary>
+        /// <param name="ratio">true if the ratio is valid, else false</param>
+        /// <returns></returns>
         public static bool CheckRatio(double ratio) {
             return InteropWrapper.src_is_valid_ratio(ratio) == 1;
         }
 
+        /// <summary>
+        /// Processes a block of input samples by resampling it to a block of output samples. This method
+        /// expects 32-bit floating point samples stored in byte arrays. When the resampler is configured
+        /// for multiple channels, samples must be interleaved. The byte counts in the parameters are always
+        /// the total counts summed over all channels.
+        /// </summary>
+        /// <param name="input">the input sample block</param>
+        /// <param name="inputOffset">the offset in the input block in bytes</param>
+        /// <param name="inputLength">the length of the input block data in bytes</param>
+        /// <param name="output">the output sample block</param>
+        /// <param name="outputOffset">the offset in the output block in bytes</param>
+        /// <param name="outputLength">the available length in the output block data in bytes</param>
+        /// <param name="endOfInput">set to true to get the buffered samples from the resampler if no more input samples are supplied</param>
+        /// <param name="inputLengthUsed">the number of bytes read from the input block</param>
+        /// <param name="outputLengthGenerated">the number of bytes written to the output block</param>
         public void Process(byte[] input, int inputOffset, int inputLength,
             byte[] output, int outputOffset, int outputLength,
             bool endOfInput, out int inputLengthUsed, out int outputLengthGenerated) {
@@ -85,6 +127,21 @@ namespace LibSampleRate {
             }
         }
 
+        /// <summary>
+        /// Processes a block of input samples by resampling it to a block of output samples. This method
+        /// expects 32-bit floating point samples stored in float arrays. When the resampler is configured
+        /// for multiple channels, samples must be interleaved. The sample counts in the parameters are always
+        /// the total counts summed over all channels.
+        /// </summary>
+        /// <param name="input">the input sample block</param>
+        /// <param name="inputOffset">the offset in the input block in samples</param>
+        /// <param name="inputLength">the length of the input block data in samples</param>
+        /// <param name="output">the output sample block</param>
+        /// <param name="outputOffset">the offset in the output block in samples</param>
+        /// <param name="outputLength">the available length in the output block data in samples</param>
+        /// <param name="endOfInput">set to true to get the buffered samples from the resampler if no more input samples are supplied</param>
+        /// <param name="inputLengthUsed">the number of samples read from the input block</param>
+        /// <param name="outputLengthGenerated">the number of samples written to the output block</param>
         public void Process(float[] input, int inputOffset, int inputLength,
             float[] output, int outputOffset, int outputLength,
             bool endOfInput, out int inputLengthUsed, out int outputLengthGenerated) {
@@ -120,6 +177,9 @@ namespace LibSampleRate {
             }
         }
 
+        /// <summary>
+        /// Disposes this instance of the resampler, freeing its memory.
+        /// </summary>
         public void Dispose() {
             if (srcState != IntPtr.Zero) {
                 srcState = InteropWrapper.src_delete(srcState);
