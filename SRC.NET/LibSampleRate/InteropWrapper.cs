@@ -17,7 +17,6 @@
 */
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace LibSampleRate {
@@ -42,7 +41,7 @@ namespace LibSampleRate {
         public static d_src_strerror src_strerror;
 
         static InteropWrapper() {
-            if (Environment.Is64BitProcess) {
+            if (IntPtr.Size == 8) {
                 src_new = Interop64.src_new;
                 src_delete = Interop64.src_delete;
                 src_process = Interop64.src_process;
