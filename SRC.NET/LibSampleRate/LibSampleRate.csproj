@@ -45,6 +45,8 @@
     <Compile Include="Interop32.cs" />
     <Compile Include="Interop64.cs" />
     <Compile Include="SrcData.cs" />
+    <Compile Include="InteropWrapper.cs" />
+    <Compile Include="SampleRateConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
