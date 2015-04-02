@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("LibSampleRate")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("LibSampleRate.NET")]
+[assembly: AssemblyDescription("Managed wrapper for the native SRC/libsamplerate resampling library")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("LibSampleRate")]
-[assembly: AssemblyCopyright("Copyright ©  2015")]
+[assembly: AssemblyCopyright("Copyright © 2015 Mario Guggenberger")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
