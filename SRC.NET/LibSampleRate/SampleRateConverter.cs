@@ -22,7 +22,6 @@ using System.Text;
 namespace LibSampleRate {
     public class SampleRateConverter : IDisposable {
 
-        private bool disposed = false;
         private IntPtr srcState = IntPtr.Zero;
         private SRC_DATA srcData;
         private int error;
